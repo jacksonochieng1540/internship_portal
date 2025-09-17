@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Student Registration</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Account Information</legend>
+                        
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username *</label>
+                            <input type="text" name="username" class="form-control" id="id_username" 
+                                   value="{{ form.username.value|default:'' }}" required>
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.username.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email Address *</label>
+                            <input type="email" name="email" class="form-control" id="id_email" 
+                                   value="{{ form.email.value|default:'' }}" required>
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.email.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label for="id_first_name" class="form-label">First Name *</label>
+                            <input type="text" name="first_name" class="form-control" id="id_first_name" 
+                                   value="{{ form.first_name.value|default:'' }}" required>
+                            {% if form.first_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.first_name.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label for="id_last_name" class="form-label">Last Name *</label>
+                            <input type="text" name="last_name" class="form-control" id="id_last_name" 
+                                   value="{{ form.last_name.value|default:'' }}" required>
+                            {% if form.last_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.last_name.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Password 1 -->
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password *</label>
+                            <input type="password" name="password1" class="form-control" id="id_password1" required>
+                            {% if form.password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password1.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Your password must contain at least 8 characters, can't be too common, and can't be entirely numeric.
+                            </div>
+                        </div>
+                        
+                        <!-- Password 2 -->
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Password Confirmation *</label>
+                            <input type="password" name="password2" class="form-control" id="id_password2" required>
+                            {% if form.password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password2.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Enter the same password as before, for verification.
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Student Information</legend>
+                        
+                        <!-- Student ID -->
+                        <div class="mb-3">
+                            <label for="id_student_id" class="form-label">Student ID *</label>
+                            <input type="text" name="student_id" class="form-control" id="id_student_id" 
+                                   value="{{ form.student_id.value|default:'' }}" required>
+                            {% if form.student_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.student_id.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Course -->
+                        <div class="mb-3">
+                            <label for="id_course" class="form-label">Course/Program *</label>
+                            <input type="text" name="course" class="form-control" id="id_course" 
+                                   value="{{ form.course.value|default:'' }}" required>
+                            {% if form.course.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.course.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Year of Study -->
+                        <div class="mb-3">
+                            <label for="id_year_of_study" class="form-label">Year of Study *</label>
+                            <select name="year_of_study" class="form-select" id="id_year_of_study" required>
+                                <option value="">Select Year</option>
+                                <option value="1" {% if form.year_of_study.value == 1 %}selected{% endif %}>Year 1</option>
+                                <option value="2" {% if form.year_of_study.value == 2 %}selected{% endif %}>Year 2</option>
+                                <option value="3" {% if form.year_of_study.value == 3 %}selected{% endif %}>Year 3</option>
+                                <option value="4" {% if form.year_of_study.value == 4 %}selected{% endif %}>Year 4</option>
+                                <option value="5" {% if form.year_of_study.value == 5 %}selected{% endif %}>Year 5</option>
+                                <option value="6" {% if form.year_of_study.value == 6 %}selected{% endif %}>Year 6</option>
+                            </select>
+                            {% if form.year_of_study.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.year_of_study.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Skills -->
+                        <div class="mb-3">
+                            <label for="id_skills" class="form-label">Skills</label>
+                            <input type="text" name="skills" class="form-control" id="id_skills" 
+                                   value="{{ form.skills.value|default:'' }}" 
+                                   placeholder="Python, Django, JavaScript, React, etc.">
+                            {% if form.skills.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.skills.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                List your skills separated by commas.
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <div class="form-group mt-4">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" type="submit">Register as Student</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="border-top pt-3 mt-4 text-center">
+                    <small class="text-muted">
+                        Already Have An Account? <a href="{% url 'login' %}" class="ml-2">Sign In</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+});
+</script>
+{% endblock %}

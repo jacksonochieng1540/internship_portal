@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Apply for {{ opportunity.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'opportunity_list' %}">Opportunities</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'opportunity_detail' opportunity.pk %}">{{ opportunity.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Apply</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Apply for {{ opportunity.title }}</h3>
+                    <p class="text-muted mb-0">{{ opportunity.company.name }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Application Guidelines</h6>
+                        <ul class="mb-0">
+                            <li>Ensure your resume is up to date with your latest skills and experiences</li>
+                            <li>Tailor your cover letter to this specific opportunity</li>
+                            <li>Double-check your application before submitting</li>
+                            <li>Application deadline: {{ opportunity.application_deadline|date:"F d, Y" }}</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5>Personal Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" value="{{ user.get_full_name }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if user.studentprofile %}
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Student ID</label>
+                                        <input type="text" class="form-control" value="{{ user.studentprofile.student_id }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Course</label>
+                                        <input type="text" class="form-control" value="{{ user.studentprofile.course }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Application Materials</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.cover_letter.id_for_label }}" class="form-label">Cover Letter *</label>
+                                {{ form.cover_letter }}
+                                <div class="form-text">Explain why you're interested in this opportunity and why you'd be a good fit.</div>
+                                {% if form.cover_letter.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.cover_letter.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.resume.id_for_label }}" class="form-label">Resume *</label>
+                                {{ form.resume }}
+                                <div class="form-text">Upload your resume in PDF or Word format (max 5MB).</div>
+                                {% if form.resume.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.resume.errors }}
+                                </div>
+                                {% endif %}
+                                
+                                {% if user.studentprofile.resume %}
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="use-existing-resume" name="use_existing_resume">
+                                    <label class="form-check-label" for="use-existing-resume">
+                                        Use my existing resume
+                                    </label>
+                                </div>
+                                <div class="mt-1">
+                                    <small class="text-muted">Current resume: <a href="{{ user.studentprofile.resume.url }}" target="_blank">View</a></small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'opportunity_detail' opportunity.pk %}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const useExistingResume = document.getElementById('use-existing-resume');
+    const resumeField = document.getElementById('{{ form.resume.id_for_label }}');
+    
+    if (useExistingResume && resumeField) {
+        useExistingResume.addEventListener('change', function() {
+            resumeField.disabled = this.checked;
+            if (this.checked) {
+                resumeField.removeAttribute('required');
+            } else {
+                resumeField.setAttribute('required', 'required');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

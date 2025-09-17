@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load opportunity_tags %}  {# Load your custom template tags #}
+
+{% block title %}Opportunities{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Find Your Perfect Opportunity</h1>
+        <p class="lead">Discover internships and attachments that match your skills and career goals</p>
+        <a href="#opportunities" class="btn btn-primary btn-lg mt-3">Browse Opportunities</a>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-md-3">
+            <div class="card filter-sidebar">
+                <div class="card-header">
+                    <h5>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="filter-form">
+                        {% for field in filter.form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a href="{% url 'opportunity_list' %}" class="btn btn-outline-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if user.is_authenticated and user.user_type == 'student' %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Application Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <span>Total Applications:</span>
+                        <strong>{{ user.application_set.count }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>Pending:</span>
+                        <strong>
+                            {% with pending_apps=user.application_set.all|filter_by_status:"pending" %}
+                                {{ pending_apps|length }}
+                            {% endwith %}
+                        </strong>
+                    </div>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm w-100 mt-3">View Dashboard</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Opportunities List -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 id="opportunities">Available Opportunities</h2>
+                <span class="text-muted">{{ page_obj.paginator.count }} results</span>
+            </div>
+            
+            {% for opportunity in page_obj %}
+            <div class="card mb-4 opportunity-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="card-title">{{ opportunity.title }}</h4>
+                            <h6 class="card-subtitle mb-2 text-primary">{{ opportunity.company.name }}</h6>
+                            <p class="card-text">{{ opportunity.description|truncatewords:30 }}</p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <span class="badge bg-primary">{{ opportunity.get_opportunity_type_display }}</span>
+                                <span class="badge bg-secondary">{{ opportunity.location }}</span>
+                                {% if opportunity.stipend %}
+                                <span class="badge bg-success">Stipend: ${{ opportunity.stipend }}</span>
+                                {% endif %}
+                                <span class="badge bg-info">{{ opportunity.duration }}</span>
+                            </div>
+                            
+                            <div class="text-muted small">
+                                <i class="bi bi-clock"></i> Apply before {{ opportunity.application_deadline|date:"M d, Y" }}
+                                <i class="bi bi-person ms-3"></i> {{ opportunity.positions_available }} position(s) available
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            {% if opportunity.company.logo %}
+                            <img src="{{ opportunity.company.logo.url }}" alt="{{ opportunity.company.name }} logo" class="company-logo mb-3">
+                            {% else %}
+                            <div class="company-logo mb-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-building text-secondary" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                            <a href="{% url 'opportunity_detail' opportunity.pk %}" class="btn btn-primary w-100">View Details</a>
+                            {% if user.is_authenticated and user.user_type == 'student' %}
+                            <div class="mt-2">
+                                {% if opportunity|has_applied:user %}
+                                <span class="badge bg-success">Already Applied</span>
+                                {% else %}
+                                <a href="{% url 'apply_opportunity' opportunity.pk %}" class="btn btn-outline-primary btn-sm w-100">Apply Now</a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-search-heart" style="font-size: 3rem; color: #6c757d;"></i>
+                    <h3 class="mt-3">No opportunities found</h3>
+                    <p class="text-muted">Try adjusting your filters or check back later for new opportunities.</p>
+                    {% if user.is_authenticated and user.user_type == 'company' %}
+                    <a href="{% url 'add_opportunity' %}" class="btn btn-primary">Post an Opportunity</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Opportunities pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

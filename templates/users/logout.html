@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Logged Out</h3>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="bi bi-box-arrow-right" style="font-size: 3rem; color: #0d6efd;"></i>
+                </div>
+                <p>You have been successfully logged out.</p>
+                <div class="mt-4">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Log In Again</a>
+                    <a href="{% url 'opportunity_list' %}" class="btn btn-outline-secondary">Go to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

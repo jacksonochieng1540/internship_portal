@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Logout{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Confirm Logout</h3>
+            </div>
+            <div class="card-body text-center">
+                <p>Are you sure you want to logout?</p>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Yes, Logout</button>
+                    <a href="{% url 'opportunity_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

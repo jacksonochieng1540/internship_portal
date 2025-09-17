@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ opportunity.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'opportunity_list' %}">Opportunities</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ opportunity.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h1 class="card-title">{{ opportunity.title }}</h1>
+                            <h4 class="text-primary">{{ opportunity.company.name }}</h4>
+                        </div>
+                        {% if opportunity.company.logo %}
+                        <img src="{{ opportunity.company.logo.url }}" alt="{{ opportunity.company.name }} logo" class="company-logo">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2 my-3">
+                        <span class="badge bg-primary">{{ opportunity.get_opportunity_type_display }}</span>
+                        <span class="badge bg-secondary">{{ opportunity.location }}</span>
+                        {% if opportunity.stipend %}
+                        <span class="badge bg-success">Stipend: ${{ opportunity.stipend }}</span>
+                        {% endif %}
+                        <span class="badge bg-info">{{ opportunity.duration }}</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Opportunity Description</h5>
+                        <p class="card-text">{{ opportunity.description|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Requirements</h5>
+                        <p>{{ opportunity.requirements|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Skills Required</h5>
+                        <p>{{ opportunity.skills_required }}</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Application Information</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Application Deadline:</span>
+                            <strong>{{ opportunity.application_deadline|date:"F d, Y" }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Positions Available:</span>
+                            <strong>{{ opportunity.positions_available }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Company Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>About {{ opportunity.company.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ opportunity.company.description }}</p>
+                    {% if opportunity.company.website %}
+                    <p><strong>Website:</strong> <a href="{{ opportunity.company.website }}" target="_blank">{{ opportunity.company.website }}</a></p>
+                    {% endif %}
+                    {% if opportunity.company.address %}
+                    <p><strong>Address:</strong> {{ opportunity.company.address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Apply Now</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'student' %}
+                            {% if has_applied %}
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i> You have already applied for this opportunity.
+                            </div>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">View Your Applications</a>
+                            {% else %}
+                            <p>Ready to apply for this opportunity?</p>
+                            <a href="{% url 'apply_opportunity' opportunity.pk %}" class="btn btn-primary btn-lg w-100">Apply Now</a>
+                            <p class="text-muted small mt-2">Application deadline: {{ opportunity.application_deadline|date:"M d, Y" }}</p>
+                            {% endif %}
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Company representatives cannot apply for opportunities.
+                        </div>
+                        {% endif %}
+                    {% else %}
+                    <p>Create an account or login to apply for this opportunity</p>
+                    <a href="{% url 'register_student' %}" class="btn btn-primary mb-2 w-100">Register as Student</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-primary w-100">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Opportunity Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Type:</span>
+                        <strong>{{ opportunity.get_opportunity_type_display }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Location:</span>
+                        <strong>{{ opportunity.location }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Duration:</span>
+                        <strong>{{ opportunity.duration }}</strong>
+                    </div>
+                    {% if opportunity.stipend %}
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Stipend:</span>
+                        <strong>${{ opportunity.stipend }}</strong>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Posted on:</span>
+                        <strong>{{ opportunity.created_at|date:"M d, Y" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span>Application Deadline:</span>
+                        <strong>{{ opportunity.application_deadline|date:"M d, Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.is_authenticated and user.user_type == 'company' and user.companyprofile.company == opportunity.company %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Management</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'edit_opportunity' opportunity.pk %}" class="btn btn-outline-primary w-100 mb-2">Edit Opportunity</a>
+                    {% if opportunity.status == 'open' %}
+                    <a href="{% url 'close_opportunity' opportunity.pk %}" class="btn btn-outline-warning w-100">Close Opportunity</a>
+                    {% else %}
+                    <a href="{% url 'open_opportunity' opportunity.pk %}" class="btn btn-outline-success w-100">Reopen Opportunity</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

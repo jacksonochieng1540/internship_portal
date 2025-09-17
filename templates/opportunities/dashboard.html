@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>User Profile</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        {% if student_profile %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Student Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Student ID:</strong> {{ student_profile.student_id }}</p>
+                <p><strong>Course:</strong> {{ student_profile.course }}</p>
+                <p><strong>Year of Study:</strong> {{ student_profile.year_of_study }}</p>
+                {% if student_profile.skills %}
+                <p><strong>Skills:</strong> {{ student_profile.skills }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Your Applications</h5>
+            </div>
+            <div class="card-body">
+                {% if applications %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Company</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td>{{ application.opportunity.title }}</td>
+                                <td>{{ application.opportunity.company.name }}</td>
+                                <td>{{ application.application_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if application.status == 'accepted' %}bg-success
+                                        {% elif application.status == 'rejected' %}bg-danger
+                                        {% elif application.status == 'shortlisted' %}bg-warning
+                                        {% elif application.status == 'reviewed' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ application.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'opportunity_detail' application.opportunity.id %}" 
+                                       class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-briefcase" style="font-size: 3rem; color: #6c757d;"></i>
+                    <h5 class="mt-3">No applications yet</h5>
+                    <p>Start browsing opportunities to apply for internships and attachments.</p>
+                    <a href="{% url 'opportunity_list' %}" class="btn btn-primary">Browse Opportunities</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Recommended Opportunities</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for opportunity in recommended_opportunities|slice:":2" %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ opportunity.title }}</h6>
+                                <p class="card-text text-muted small">{{ opportunity.company.name }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">{{ opportunity.opportunity_type }}</span>
+                                    <span class="badge bg-secondary">{{ opportunity.location }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{% url 'opportunity_detail' opportunity.id %}" 
+                                   class="btn btn-sm btn-outline-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-3">
+                            <i class="bi bi-search" style="font-size: 2rem; color: #6c757d;"></i>
+                            <p class="mt-2">No recommendations available at the moment.</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

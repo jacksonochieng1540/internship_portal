@@ -1,0 +1,76 @@
+.dashboard-nav {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    padding: 1rem 0;
+}
+
+.dashboard-nav .nav-link {
+    color: var(--secondary);
+    padding: 0.5rem 1.5rem;
+    border-left: 3px solid transparent;
+}
+
+.dashboard-nav .nav-link:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    color: var(--primary);
+}
+
+.dashboard-nav .nav-link.active {
+    color: var(--primary);
+    border-left-color: var(--primary);
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.dashboard-card {
+    height: 100%;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 2rem;
+}
+
+.activity-feed {
+    list-style: none;
+    padding: 0;
+}
+
+.activity-feed li {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-left: 2rem;
+}
+
+.activity-feed li:last-child {
+    border-bottom: none;
+}
+
+.activity-feed li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--primary);
+}
+
+.activity-feed .activity-time {
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
+
+.progress-bar {
+    background-color: var(--primary);
+}
