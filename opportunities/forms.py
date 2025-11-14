@@ -1,6 +1,6 @@
 from django import forms
 from .models import Opportunity, Application, Company
-from django.conf import settings  # Import settings to use AUTH_USER_MODEL
+from django.conf import settings  
 
 class OpportunityForm(forms.ModelForm):
     class Meta:
