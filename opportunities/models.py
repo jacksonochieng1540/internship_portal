@@ -1,5 +1,5 @@
 from django.db import models
-from django.conf import settings  # Import settings to use AUTH_USER_MODEL
+from django.conf import settings  
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
@@ -34,7 +34,7 @@ class Opportunity(models.Model):
     description = models.TextField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     opportunity_type = models.CharField(max_length=20, choices=OPPORTUNITY_TYPES)
-    duration = models.CharField(max_length=100)  # e.g., "3 months", "6 weeks"
+    duration = models.CharField(max_length=100)  
     stipend = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     location = models.CharField(max_length=200)
     requirements = models.TextField()
@@ -60,7 +60,6 @@ class Application(models.Model):
         ('accepted', 'Accepted'),
     ]
 
-    # Use settings.AUTH_USER_MODEL instead of direct User reference
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE)
     application_date = models.DateTimeField(auto_now_add=True)
@@ -75,5 +74,3 @@ class Application(models.Model):
     def __str__(self):
         return f"{self.student.username} - {self.opportunity.title}"
 
-# Remove StudentProfile from opportunities since it's now in the users app
-# StudentProfile has been moved to users/models.py
