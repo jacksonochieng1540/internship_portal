@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.conf import settings  # Import settings
+from django.conf import settings  
 from .models import Opportunity, Application, Company
 from .forms import OpportunityForm, ApplicationForm, CompanyForm
 from .filters import OpportunityFilter
