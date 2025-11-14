@@ -1,6 +1,6 @@
 import django_filters
 from .models import Opportunity
-
+     
 class OpportunityFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains', label='Title contains')
     company__name = django_filters.CharFilter(lookup_expr='icontains', label='Company name')
